@@ -41,7 +41,7 @@ class BotController extends Controller
         $username = $request->callback_query['from']['username'] ?? $request->message['chat']['username'] ?? '';
         $file_id = $request->message['photo'][1]['file_id'] ?? $request->message['document']['file_id'] ?? '';
 
-        if(!$message)
+        if(!$message && !$file_id)
         {
             return response()->json([
                 'error' => 'callback_query is not set',
