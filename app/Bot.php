@@ -21,7 +21,7 @@ class Bot extends Model
         return $this->hasMany('App\Step');
     }
 
-    public function geApiAttribute()
+    public function getApiAttribute()
     {
         return 'https://api.telegram.org/bot' . $this->token . '/';
     }
