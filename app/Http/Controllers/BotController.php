@@ -39,6 +39,7 @@ class BotController extends Controller
         $chat_id = $request->callback_query['from']['id'] ?? $request->message['chat']['id'] ?? '';
         $name = $request->callback_query['from']['first_name'] ?? $request->message['chat']['first_name'] ?? '';
         $username = $request->callback_query['from']['username'] ?? $request->message['chat']['username'] ?? '';
+        $file_id = $request->message['photo'][1]['file_id'] ?? $request->message['document']['file_id'] ?? '';
 
         if(!$message)
         {
@@ -47,36 +48,37 @@ class BotController extends Controller
             ], 400);
         }
 
-        
         $user = User::firstOrCreate(
             ['telegram_id' => $chat_id, 'bot_id' => $bot->id],
             ['name' => $name, 'username' => $username]
         );
 
-        if($user->banned) {
+        if($user->banned) 
+        {
             return response()->json([
                 'error' => 'user is banned',
             ], 200);
         }
 
-  
-        // upload all files if available
-        if (isset($request->message['photo'][1]['file_id']) || isset($request->message['document'])) 
-        {
-            $file_id = $request->message['photo'][1]['file_id'] ?? $request->message['document']['file_id'];
+        
 
+        // upload all files if available
+        if ($file_id) 
+        {
             $out = Http::post($bot->api . 'getFile', [
                 'file_id' => $file_id,
             ]);
             $out = $response->json();
 
+            Log::info('Telegram callback sent to getFile', $response->json() );
+            
             $file_path = Storage::putFileAs(
                 'public/' . $user->user_id,
                  file_get_contents(
-                     'https://api.telegram.org/file/'.$bot->token.'/' 
+                     'https://api.telegram.org/file/bot'.$bot->token.'/' 
                     . $out['result']['file_path']
                 ),
-                ($request->message['document']['file_name'] ?? $request->message['photo'][1]['file_id'] . '.jpg')
+                $request->message['document']['file_name'] ?? $request->message['photo'][1]['file_unique_id'] . '.jpg'
             );
 
             $message = $file_path;
