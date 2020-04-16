@@ -49,7 +49,7 @@ class BotController extends Controller
 
         
         $user = User::firstOrCreate(
-            ['chat_id' => $chat_id, 'bot_id' => $bot->id],
+            ['telegram_id' => $chat_id, 'bot_id' => $bot->id],
             ['name' => $name, 'username' => $username]
         );
 
