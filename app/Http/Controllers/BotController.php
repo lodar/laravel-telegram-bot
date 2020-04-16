@@ -135,7 +135,7 @@ class BotController extends Controller
 
         $payload = [
             'chat_id' => $user->telegram_id,
-            'text' => $step->response,
+            'text' => $step->message,
             'disable_web_page_preview' => true
         ];
 
