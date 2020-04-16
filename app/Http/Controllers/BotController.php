@@ -23,8 +23,15 @@ class BotController extends Controller
     
     public function show(Bot $bot, Request $request)
     {
+
+        if(!$bot->id)
+        {
+            return response()->json([
+                'error' => 'not found',
+            ], 404);
+        }
         
-        // Log::info('Telegram callback received', $request->all());
+        Log::info('Telegram callback received', $request->all());
         $message = $request->message['text'] ?? $request->callback_query['data'] ?? '';
         $chat_id = $request->callback_query['from']['id'] ?? $request->message['chat']['id'] ?? '';
         $name = $request->callback_query['from']['first_name'] ?? $request->message['chat']['first_name'] ?? '';
@@ -45,7 +52,7 @@ class BotController extends Controller
 
         if($user->banned) {
             return response()->json([
-                'error' => 'user banned',
+                'error' => 'user is banned',
             ], 200);
         }
 
