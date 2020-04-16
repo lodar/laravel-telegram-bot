@@ -34,7 +34,8 @@ php artisan tinker --execute="\App\Step::insert([
     'step_order' => 1,
     'message' => 'Hello?',
     'payload' => '', // optional json payload
-    'skippable' => 0, 
+    'skippable' => 0, // can be skipped
+    'uploadable' => 0, // receive files
     'bot_id' => 1,
     ]);"
 ```

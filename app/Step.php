@@ -8,7 +8,7 @@ class Step extends Model
 {
 
     protected $fillable = [
-        'message', 'skippable', 'bot_id', 'payload', 'step_order'
+        'message', 'skippable', 'uploadable', 'bot_id', 'payload', 'step_order'
     ];
 
     protected $casts = [

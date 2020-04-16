@@ -17,6 +17,7 @@ class CreateStepsTable extends Migration
             $table->id();
             $table->text('message')->nullable();
             $table->boolean('skippable')->nullable();
+            $table->boolean('uploadable')->nullable();
             $table->integer('bot_id')->nullable()->index();
             $table->integer('step_order')->nullable()->index();
             $table->text('payload')->nullable();

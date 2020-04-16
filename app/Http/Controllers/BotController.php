@@ -93,7 +93,8 @@ class BotController extends Controller
                 'bot_id' => $user->bot_id,
             ])->first();
         } 
-        else 
+
+        if($message == 'skip_step' || $message == 'next_step')
         {
             $step = Step::where([
                 'step_order' => $user->step->step_order+1,
@@ -101,18 +102,29 @@ class BotController extends Controller
             ])->first();
         }
 
-        $buttons[] = ['text' => __('Start over'), 'callback_data' => '/start'];
+        if($bot->steps->max('step_order') == $user->step->step_order)
+        {
+            $step = Step::where([
+                'step_order' => $user->step->step_order,
+                'bot_id' => $user->bot_id,
+            ])->first();
+            $buttons[] = ['text' => __('Start over'), 'callback_data' => '/start'];
+        }
 
-        $user->step_id = $step->id ?? 1;
+        $user->step_id = $step->id;
 
         $chat_log = new ChatLog([
             'response' => $message,
             'user_id' => $user->id,
             'step_id' => $user->step_id,
         ]);
+        $chat_log->save();
 
         
-      
+        if($step->uploadable)
+        {
+            $buttons[] = ['text' => __('Next step'), 'callback_data' => 'next_step'];
+        }
        
         if($step->skippable)
         {
