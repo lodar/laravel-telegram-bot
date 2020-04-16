@@ -61,9 +61,9 @@ class BotController extends Controller
 
   
         // upload all files if available
-        if (isset($request->photo[1]['file_id']) || $request->document) 
+        if (isset($request->message['photo'][1]['file_id']) || isset($request->message['document'])) 
         {
-            $file_id = $request->photo[1]['file_id'] ?? $request->document['file_id'];
+            $file_id = $request->message['photo'][1]['file_id'] ?? $request->message['document']['file_id'];
 
             $out = Http::post($bot->api . 'getFile', [
                 'file_id' => $file_id,
@@ -76,7 +76,7 @@ class BotController extends Controller
                      'https://api.telegram.org/file/'.$bot->token.'/' 
                     . $out['result']['file_path']
                 ),
-                ($request->document['file_name'] ?? $request->photo[1]['file_id'] . '.jpg')
+                ($request->message['document']['file_name'] ?? $request->message['photo'][1]['file_id'] . '.jpg')
             );
 
             $message = $file_path;
@@ -94,7 +94,7 @@ class BotController extends Controller
             ])->first();
         } 
 
-        if($message == 'skip_step' || $message == 'next_step')
+        elseif($message == 'skip_step' || $message == 'next_step')
         {
             $step = Step::where([
                 'step_order' => $user->step->step_order+1,
@@ -102,13 +102,27 @@ class BotController extends Controller
             ])->first();
         }
 
-        if($bot->steps->max('step_order') == $user->step->step_order)
+        elseif($bot->steps->max('step_order') == $user->step->step_order)
         {
             $step = Step::where([
                 'step_order' => $user->step->step_order,
                 'bot_id' => $user->bot_id,
             ])->first();
             $buttons[] = ['text' => __('Start over'), 'callback_data' => '/start'];
+        } 
+        else 
+        {
+            $step = Step::where([
+                'step_order' => $user->step->step_order+1,
+                'bot_id' => $user->bot_id,
+            ])->first();
+        }
+
+        if(!isset($step->id))
+        {
+            return response()->json([
+                'error' => 'next step is not set',
+            ], 400);
         }
 
         $user->step_id = $step->id;
