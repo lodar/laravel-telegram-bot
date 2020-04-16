@@ -21,10 +21,12 @@ class BotController extends Controller
         return $request->all();
     }
     
-    public function show(Bot $bot, Request $request)
+    public function show(Request $request, $callback)
     {
 
-        if(!$bot->id)
+        $bot = Bot::where('callback', $callback)->firstOrFail();
+        
+        if(!$bot->id || !count($bot->steps))
         {
             return response()->json([
                 'error' => 'not found',
@@ -32,6 +34,7 @@ class BotController extends Controller
         }
         
         Log::info('Telegram callback received', $request->all());
+        
         $message = $request->message['text'] ?? $request->callback_query['data'] ?? '';
         $chat_id = $request->callback_query['from']['id'] ?? $request->message['chat']['id'] ?? '';
         $name = $request->callback_query['from']['first_name'] ?? $request->message['chat']['first_name'] ?? '';
