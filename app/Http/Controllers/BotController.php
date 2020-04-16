@@ -128,6 +128,11 @@ class BotController extends Controller
             ];
         }
 
+        if($step->payload)
+        {
+            $payload = array_merge($payload, $step->payload);
+        }
+
         $payload = [
             'chat_id' => $user->telegram_id,
             'text' => $step->response,
@@ -137,7 +142,7 @@ class BotController extends Controller
         $response = Http::withHeaders([
             config('services.http')
             ])->post( $bot->api . 'sendMessage', [
-                array_merge($payload, $options, $step->payload)
+                array_merge($payload, $options)
         ]);
 
 
