@@ -22,6 +22,11 @@ class User extends Authenticatable
         return $this->belongsTo('App\Bot');
     }
 
+    public function step()
+    {
+        return $this->belongsTo('App\Step');
+    }
+
     public function chat_logs()
     {
         return $this->hasMany('App\ChatLog');

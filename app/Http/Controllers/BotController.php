@@ -112,6 +112,7 @@ class BotController extends Controller
 
         
         $buttons = [];
+        $options = [];
        
         if($step->skippable)
         {
