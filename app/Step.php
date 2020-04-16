@@ -11,6 +11,10 @@ class Step extends Model
         'message', 'skippable', 'bot_id', 'payload', 'step_order'
     ];
 
+    protected $casts = [
+        'payload' => 'array',
+    ];
+
     public function bot()
     {
         return $this->belongsTo('App\Bot');
