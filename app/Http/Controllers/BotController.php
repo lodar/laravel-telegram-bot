@@ -139,12 +139,11 @@ class BotController extends Controller
             'disable_web_page_preview' => true
         ];
 
-        $response = Http::withHeaders([
-            config('services.http')
-            ])->post( $bot->api . 'sendMessage', [
+        $response = Http::post( $bot->api . 'sendMessage', [
                 array_merge($payload, $options)
         ]);
 
+        Log::info('Telegram callback sent to '. $bot->api . 'sendMessage', array_merge($payload, $options, $response->json()));
 
         return response()->json([
             'status' => 'ok',

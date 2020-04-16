@@ -14,7 +14,7 @@ class User extends Authenticatable
     ];
 
     protected $with = [
-        'bot'
+        'bot', 'step'
     ];
 
     public function bot()
