@@ -83,7 +83,8 @@ class BotController extends Controller
         }
 
         
-        
+        $buttons = [];
+        $options = [];
 
         if($message == '/start')
         {
@@ -98,9 +99,9 @@ class BotController extends Controller
                 'step_order' => $user->step->step_order+1,
                 'bot_id' => $user->bot_id,
             ])->first();
-            $buttons[] = ['text' => __('Start over'), 'callback_data' => '/start'];
-     
         }
+
+        $buttons[] = ['text' => __('Start over'), 'callback_data' => '/start'];
 
         $user->step_id = $step->id ?? 1;
 
@@ -111,8 +112,7 @@ class BotController extends Controller
         ]);
 
         
-        $buttons = [];
-        $options = [];
+      
        
         if($step->skippable)
         {
@@ -128,22 +128,17 @@ class BotController extends Controller
             ];
         }
 
-        if($step->payload)
-        {
-            $payload = array_merge($payload, $step->payload);
-        }
-
         $payload = [
             'chat_id' => $user->telegram_id,
             'text' => $step->message,
             'disable_web_page_preview' => true
         ];
 
-        $response = Http::post( $bot->api . 'sendMessage', [
-                array_merge($payload, $options)
-        ]);
+        $payload = array_merge($payload, $options, ($step->payload ?? []));
+        
+        $response = Http::post($bot->api . 'sendMessage', $payload);
 
-        Log::info('Telegram callback sent to '. $bot->api . 'sendMessage', array_merge($payload, $options, $response->json()));
+        Log::info('Telegram callback sent to '. $bot->api . 'sendMessage', array_merge($payload, $response->json()));
 
         return response()->json([
             'status' => 'ok',
