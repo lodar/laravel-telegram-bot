@@ -65,13 +65,15 @@ class BotController extends Controller
         // upload all files if available
         if ($file_id) 
         {
+            Log::info('HIT');
+
             $out = Http::post($bot->api . 'getFile', [
                 'file_id' => $file_id,
             ]);
-            $out = $response->json();
+            $out = $out->json();
 
-            Log::info('Telegram callback sent to getFile', $response->json() );
-            
+            Log::info('Telegram callback sent to getFile', $out );
+
             $file_path = Storage::putFileAs(
                 'public/' . $user->user_id,
                  file_get_contents(
