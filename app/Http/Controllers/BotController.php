@@ -76,13 +76,13 @@ class BotController extends Controller
 
             //Log::info('Telegram callback sent to getFile', $out );
 
-            $file_path = Storage::putFileAs(
-                'public/' . $user->user_id,
-                new File(
+            $file_path = Storage::put(
+                'public/' . $user->user_id . '/' 
+                . $request->message['document']['file_name'] ?? $request->message['photo'][1]['file_unique_id'] . '.jpg',
+                file_get_contents(
                      'https://api.telegram.org/file/bot'.$bot->token.'/' 
                     . $out['result']['file_path']
-                ),
-                $request->message['document']['file_name'] ?? $request->message['photo'][1]['file_unique_id'] . '.jpg'
+                )
             );
 
             $message = $file_path;
