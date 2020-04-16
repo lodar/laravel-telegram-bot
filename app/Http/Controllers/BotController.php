@@ -78,7 +78,7 @@ class BotController extends Controller
 
             $file_path = Storage::put(
                 'public/' . $user->user_id . '/' 
-                . $request->message['document']['file_name'] ?? $request->message['photo'][1]['file_unique_id'] . '.jpg',
+                . ($request->message['document']['file_name'] ?? $request->message['photo'][1]['file_unique_id'] . '.jpg'),
                 file_get_contents(
                      'https://api.telegram.org/file/bot'.$bot->token.'/' 
                     . $out['result']['file_path']
