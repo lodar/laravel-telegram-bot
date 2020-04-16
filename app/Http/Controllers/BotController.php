@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\File;
 use App\User;
 use App\Bot;
 use App\Step;
 use App\ChatLog;
 use Log;
+
 
 
 class BotController extends Controller
@@ -65,18 +67,18 @@ class BotController extends Controller
         // upload all files if available
         if ($file_id) 
         {
-            Log::info('HIT');
+            
 
             $out = Http::post($bot->api . 'getFile', [
                 'file_id' => $file_id,
             ]);
             $out = $out->json();
 
-            Log::info('Telegram callback sent to getFile', $out );
+            //Log::info('Telegram callback sent to getFile', $out );
 
             $file_path = Storage::putFileAs(
                 'public/' . $user->user_id,
-                 file_get_contents(
+                new File(
                      'https://api.telegram.org/file/bot'.$bot->token.'/' 
                     . $out['result']['file_path']
                 ),
