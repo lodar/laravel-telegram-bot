@@ -62,30 +62,20 @@ class BotController extends Controller
             ], 200);
         }
 
-        
-
-        // upload all files if available
         if ($file_id) 
         {
-            
-
             $out = Http::post($bot->api . 'getFile', [
                 'file_id' => $file_id,
             ]);
             $out = $out->json();
 
-            //Log::info('Telegram callback sent to getFile', $out );
+//            $file_path = Storage::put(
+//                'public/' . $user->user_id . '/' 
+//                . ($request->message['document']['file_name'] ?? $request->message['photo'][1]['file_unique_id'] . '.jpg'),
+//                file_get_contents()
+//            );
 
-            $file_path = Storage::put(
-                'public/' . $user->user_id . '/' 
-                . ($request->message['document']['file_name'] ?? $request->message['photo'][1]['file_unique_id'] . '.jpg'),
-                file_get_contents(
-                     'https://api.telegram.org/file/bot'.$bot->token.'/' 
-                    . $out['result']['file_path']
-                )
-            );
-
-            $message = $file_path;
+            $message = 'https://api.telegram.org/file/bot'.$bot->token.'/' . $out['result']['file_path'];
         }
 
         
