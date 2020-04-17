@@ -158,6 +158,11 @@ class BotController extends Controller
             $buttons[] = ['text' => __('Skip step'), 'callback_data' => 'skip_step'];
         }
 
+        if(is_array($step->payload) && count($step->payload))
+        {
+            $buttons = $step->payload;
+        }
+
         if(count($buttons))
         {
             $options = [
@@ -173,7 +178,7 @@ class BotController extends Controller
             'disable_web_page_preview' => true
         ];
 
-        $payload = array_merge($payload, $options, ($step->payload ?? []));
+        $payload = array_merge($payload, $options);
         
         $response = Http::post($bot->api . 'sendMessage', $payload);
 
