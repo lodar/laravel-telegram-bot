@@ -76,12 +76,24 @@ class BotController extends Controller
 //                file_get_contents()
 //            );
 
-            $message = 'https://api.telegram.org/file/bot'.$bot->token.'/' . $out['result']['file_path'];
+            $message = 'https://api.telegram.org/file/bot'.$bot->token.'/' . ($out['result']['file_path'] ?? '');
         }
 
         
         $buttons = [];
         $options = [];
+
+        if($user->step_id)
+        {
+            $chat_log = new ChatLog([
+                'response' => $message,
+                'user_id' => $user->id,
+                'step_id' => $user->step_id,
+                'remember_token' => $user->remember_token,
+            ]);
+            $chat_log->save();
+        }
+        
 
         if($message == '/start')
         {
@@ -98,8 +110,7 @@ class BotController extends Controller
                 'bot_id' => $user->bot_id,
             ])->first();
             $buttons[] = ['text' => __('Start over'), 'callback_data' => '/start'];
-            // send log to owner
-            $send_chat_log = true;
+            $send_chat_logs = true;
         } 
         elseif($message == 'skip_step' || $message == 'next_step')
         {
@@ -133,15 +144,9 @@ class BotController extends Controller
         $user->step_id = $step->id;
         $user->save();
 
-        $chat_log = new ChatLog([
-            'response' => $message,
-            'user_id' => $user->id,
-            'step_id' => $user->step_id,
-            'remember_token' => $user->remember_token,
-        ]);
-        $chat_log->save();
+   
 
-        if(isset($send_chat_log))
+        if(isset($send_chat_logs))
         {
             $text[] = __('Chat log') . ":";
             $chat_logs = ChatLog::where('remember_token', $user->remember_token)->get();
