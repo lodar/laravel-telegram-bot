@@ -103,7 +103,7 @@ class BotController extends Controller
             ])->first();
             $user->remember_token = Str::uuid();
         } 
-        elseif($bot->steps->max('step_order') <= $user->step->step_order+1)
+        elseif($bot->steps->max('step_order') == $user->step->step_order)
         {
             $step = Step::where([
                 'step_order' => $user->step->step_order,
