@@ -18,7 +18,7 @@ Edit `.env` DB_* config values to set your database and run migration command.
 
 ```
 heroku config:set DB_CONNECTION=pgsql DB_HOST= DB_PORT=5432 DB_DATABASE= DB_USERNAME= DB_PASSWORD=
-php artisan migrate --force
+heroku run php artisan migrate --force
 ```
   
   
