@@ -38,7 +38,7 @@ class BotController extends Controller
         
         Log::info('Telegram callback received', $request->all());
         
-        $message = $request->message['text'] ?? $request->callback_query['data'] ?? '';
+        $message = $request->callback_query['data'] ?? $request->message['text'] ?? '';
         $chat_id = $request->callback_query['from']['id'] ?? $request->message['chat']['id'] ?? '';
         $name = $request->callback_query['from']['first_name'] ?? $request->message['chat']['first_name'] ?? '';
         $username = $request->callback_query['from']['username'] ?? $request->message['chat']['username'] ?? '';
