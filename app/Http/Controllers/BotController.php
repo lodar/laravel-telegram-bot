@@ -95,7 +95,13 @@ class BotController extends Controller
                 'bot_id' => $user->bot_id,
             ])->first();
             $user->remember_token = Str::uuid();
-        } 
+        }
+        elseif($file_id)
+        {
+            $step = $user->step;
+            $step->message = __('File uploaded') . '. ' . __('Upload next file or click Next step') . '.';
+            $buttons[] = ['text' => __('Next step'), 'callback_data' => 'next_step'];
+        }
         elseif($bot->steps->max('step_order') <= $user->step->step_order+1)
         {
             $step = Step::where([
@@ -109,13 +115,6 @@ class BotController extends Controller
         {
             $step = Step::where([
                 'step_order' => $user->step->step_order+1,
-                'bot_id' => $user->bot_id,
-            ])->first();
-        }
-        elseif($file_id)
-        {
-            $step = Step::where([
-                'step_order' => $user->step->step_order,
                 'bot_id' => $user->bot_id,
             ])->first();
         }
@@ -152,11 +151,7 @@ class BotController extends Controller
             ]);
         }
         
-        if($step->uploadable)
-        {
-            $buttons[] = ['text' => __('Next step'), 'callback_data' => 'next_step'];
-        }
-       
+    
         if($step->skippable)
         {
             $buttons[] = ['text' => __('Skip step'), 'callback_data' => 'skip_step'];
