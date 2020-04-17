@@ -34,6 +34,16 @@ php artisan tinker --execute="\App\Bot::insert([
 ```
 
 
+Attach a webhook to your new bot:
+
+```
+TOKEN=0000:XXXX # your bot token
+CALLBACK=secret_webhook_path # your secret callback path
+curl -s -X POST 'https://api.telegram.org/bot'$TOKEN'/setWebhook' -d  \
+"url=https://your-domain/callback/"$CALLBACK 
+```
+
+
 Insert bot steps. 
 `step_order` - start with 1, incremental.
 `payload` - add custom action buttons to the step or leave as null.
