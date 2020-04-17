@@ -69,13 +69,6 @@ class BotController extends Controller
                 'file_id' => $file_id,
             ]);
             $out = $out->json();
-
-//            $file_path = Storage::put(
-//                'public/' . $user->user_id . '/' 
-//                . ($request->message['document']['file_name'] ?? $request->message['photo'][1]['file_unique_id'] . '.jpg'),
-//                file_get_contents()
-//            );
-
             $message = 'https://api.telegram.org/file/bot'.$bot->token.'/' . ($out['result']['file_path'] ?? '');
         }
 
@@ -103,10 +96,10 @@ class BotController extends Controller
             ])->first();
             $user->remember_token = Str::uuid();
         } 
-        elseif($bot->steps->max('step_order') == $user->step->step_order)
+        elseif($bot->steps->max('step_order') <= $user->step->step_order+1)
         {
             $step = Step::where([
-                'step_order' => $user->step->step_order,
+                'step_order' => $user->step->step_order+1,
                 'bot_id' => $user->bot_id,
             ])->first();
             $buttons[] = ['text' => __('Start over'), 'callback_data' => '/start'];
@@ -126,7 +119,7 @@ class BotController extends Controller
                 'bot_id' => $user->bot_id,
             ])->first();
         }
-        else 
+        else
         {
             $step = Step::where([
                 'step_order' => $user->step->step_order+1,
@@ -143,8 +136,6 @@ class BotController extends Controller
 
         $user->step_id = $step->id;
         $user->save();
-
-   
 
         if(isset($send_chat_logs))
         {
