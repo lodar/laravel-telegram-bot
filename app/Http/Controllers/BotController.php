@@ -138,7 +138,8 @@ class BotController extends Controller
 
         if(isset($send_chat_logs))
         {
-            $text[] = __('Chat log') . ":";
+            $text[] = __('Chat log') . " " . $user->remember_token;
+            $text[] =  '@' . $user->username;
             $chat_logs = ChatLog::where('remember_token', $user->remember_token)->get();
             foreach ($chat_logs as $log) 
             {
