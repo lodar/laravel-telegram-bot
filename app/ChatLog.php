@@ -10,6 +10,11 @@ class ChatLog extends Model
         'step_id', 'user_id', 'response'
     ];
 
+    protected $with = [
+        'step',
+    ];
+
+
 
     public function user()
     {

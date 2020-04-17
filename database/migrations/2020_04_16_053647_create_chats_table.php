@@ -18,6 +18,7 @@ class CreateChatsTable extends Migration
             $table->integer('step_id')->unsigned()->nullable()->index();
             $table->integer('user_id')->unsigned()->nullable()->index();
             $table->text('response')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
     }

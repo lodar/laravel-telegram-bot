@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\File;
+use Illuminate\Support\Str;
 use App\User;
 use App\Bot;
 use App\Step;
@@ -88,16 +89,9 @@ class BotController extends Controller
                 'step_order' => 1,
                 'bot_id' => $user->bot_id,
             ])->first();
+            $user->remember_token = Str::uuid();
+            $user->save();
         } 
-
-        elseif($message == 'skip_step' || $message == 'next_step')
-        {
-            $step = Step::where([
-                'step_order' => $user->step->step_order+1,
-                'bot_id' => $user->bot_id,
-            ])->first();
-        }
-
         elseif($bot->steps->max('step_order') == $user->step->step_order)
         {
             $step = Step::where([
@@ -105,7 +99,16 @@ class BotController extends Controller
                 'bot_id' => $user->bot_id,
             ])->first();
             $buttons[] = ['text' => __('Start over'), 'callback_data' => '/start'];
+            // send log to owner
+            $send_chat_log = true;
         } 
+        elseif($file_id)
+        {
+            $step = Step::where([
+                'step_order' => $user->step->step_order,
+                'bot_id' => $user->bot_id,
+            ])->first();
+        }
         else 
         {
             $step = Step::where([
@@ -127,9 +130,24 @@ class BotController extends Controller
             'response' => $message,
             'user_id' => $user->id,
             'step_id' => $user->step_id,
+            'remember_token' => $user->remember_token,
         ]);
         $chat_log->save();
 
+        if(isset($send_chat_log))
+        {
+            $text[] = __('Chat log') . ":";
+            $chat_logs = ChatLog::where('remember_token', $user->remember_token)->get();
+            foreach ($chat_logs as $log) 
+            {
+                $text[] = $log->step->message;
+                $text[] = $log->response;
+            }
+            $response = Http::post($bot->api . 'sendMessage', [
+                'chat_id' => $bot->owner,
+                'text' => implode("\n\n", $text),
+            ]);
+        }
         
         if($step->uploadable)
         {
