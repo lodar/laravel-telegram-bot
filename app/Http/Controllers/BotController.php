@@ -90,7 +90,6 @@ class BotController extends Controller
                 'bot_id' => $user->bot_id,
             ])->first();
             $user->remember_token = Str::uuid();
-            $user->save();
         } 
         elseif($bot->steps->max('step_order') == $user->step->step_order)
         {
@@ -102,6 +101,13 @@ class BotController extends Controller
             // send log to owner
             $send_chat_log = true;
         } 
+        elseif($message == 'skip_step' || $message == 'next_step')
+        {
+            $step = Step::where([
+                'step_order' => $user->step->step_order+1,
+                'bot_id' => $user->bot_id,
+            ])->first();
+        }
         elseif($file_id)
         {
             $step = Step::where([
@@ -125,6 +131,7 @@ class BotController extends Controller
         }
 
         $user->step_id = $step->id;
+        $user->save();
 
         $chat_log = new ChatLog([
             'response' => $message,

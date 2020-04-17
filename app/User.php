@@ -10,7 +10,7 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $fillable = [
-        'name', 'username', 'telegram_id', 'bot_id'
+        'name', 'username', 'telegram_id', 'bot_id', 'remember_token'
     ];
 
     protected $with = [

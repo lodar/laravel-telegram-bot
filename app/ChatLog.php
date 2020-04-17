@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ChatLog extends Model
 {
     protected $fillable = [
-        'step_id', 'user_id', 'response'
+        'step_id', 'user_id', 'response', 'remember_token'
     ];
 
     protected $with = [
