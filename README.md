@@ -1,17 +1,22 @@
-## Installation
+## Install on heroku
 
-Clone the repository and install dependencies:
+Install [heroku-cli](https://devcenter.heroku.com/articles/heroku-cli).
+
+Clone the repository and install dependencies.
 
 ```
 git clone git@github.com:lodar/laravel-telegram-bot.git
 cd laravel-telegram-bot
-composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --no-suggest --optimize-autoloader
+heroku create
+git add . && git commit -am 'release' &&  git push heroku master
+heroku run composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --no-suggest --optimize-autoloader
 ```
 
-
-Edit `.env` DB_* config values to set your database and run migration command:
+Connect to [heroku postgres](https://elements.heroku.com/addons/heroku-postgresql) to your app.
+Edit `.env` DB_* config values to set your database and run migration command.
 
 ```
+heroku config:set DB_CONNECTION=pgsql DB_HOST= DB_PORT=5432 DB_DATABASE= DB_USERNAME= DB_PASSWORD=
 php artisan migrate --force
 ```
 
@@ -25,7 +30,7 @@ To find group_id invite `@RawDataBot` to your group. [More info.](https://stacko
 Don't forget to kick `@RawDataBot` from your group and invite your new bot.
 
 ```
-php artisan tinker --execute="\App\Bot::insert([ 
+heroku run php artisan tinker --execute="\App\Bot::insert([ 
     'name' => 'myNewBot', 
     'callback' => 'secret_webhook_path',
     'token' => '0000:XXXXXX',
@@ -51,7 +56,7 @@ Insert bot steps.
 `uploadable` - step can handle file upload by user.
 
 ```
-php artisan tinker --execute="\App\Step::insert([ 
+heroku run php artisan tinker --execute="\App\Step::insert([ 
     'step_order' => 1, 
     'message' => 'Hello?',
     'payload' => '[
